@@ -1,8 +1,11 @@
 <?php
 
+
 namespace MPHB\Views\Shortcodes;
 
 use MPHB\Utils\DateUtils;
+
+
 
 /**
  * @todo add actions & filters
@@ -900,15 +903,24 @@ class CheckoutView {
 	 * @param array $roomDetails
 	 */
 	public static function renderCheckoutForm( $booking, $roomDetails, $customer = null ){
+		
+	$stripe = array(
+    "secret_key" => "sk_test_51LUQxsKTB4cfnGsJxhSoVkTyWFiPR2SfFCUcE9A1eoVhEGHc8Bzgxt9Iz84SYEnNfaA4WBPLmdK9mw4NNIgmV6gT008Hf5y8R7",
+    "publishable_key" => "pk_test_51LUQxsKTB4cfnGsJ3tkmq25GOXLFjAsDm0n4YbYCfjBjOV41HsvF11bghlJ3mfM5NPNGhLamH2cPe2Tm4V7Oou0r00IzaZPpDl",
+	);
+	\Stripe\Stripe::setApiKey($stripe['secret_key']); 
+
 		$actionUrl = add_query_arg( 'step', \MPHB\Shortcodes\CheckoutShortcode::STEP_BOOKING, MPHB()->settings()->pages()->getCheckoutPageUrl() );
 		$checkoutId = mphb_generate_uuid4();
 		$nonceAction = \MPHB\Shortcodes\CheckoutShortcode::NONCE_ACTION_BOOKING . '-' . $checkoutId;
 		?>
 		<form class="mphb_sc_checkout-form" enctype="<?php echo esc_attr( apply_filters('mphb_checkout_form_enctype_data', '') ); ?>" method="POST" action="<?php echo esc_url( $actionUrl ); ?>">
-
+	
+   
+		
 			<?php wp_nonce_field( $nonceAction, \MPHB\Shortcodes\CheckoutShortcode::NONCE_NAME ); ?>
 
-			<input type="hidden"
+			 <input type="hidden"
 				   name="<?php echo esc_attr( \MPHB\Shortcodes\CheckoutShortcode::BOOKING_CID_NAME ); ?>"
 				   value="<?php echo esc_attr( $checkoutId ); ?>"
 				   />
@@ -920,23 +932,50 @@ class CheckoutView {
 				   name="mphb_check_out_date"
 				   value="<?php echo esc_attr( $booking->getCheckOutDate()->format( MPHB()->settings()->dateTime()->getDateTransferFormat() ) ); ?>"
 				   />
-			<input type="hidden"
-				   name="mphb_checkout_step"
-				   value="<?php 
-						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				   		echo \MPHB\Shortcodes\CheckoutShortcode::STEP_BOOKING; ?>"
+			<input type="hidden" name="mphb_checkout_step"value="<?php echo \MPHB\Shortcodes\CheckoutShortcode::STEP_BOOKING; ?>"
 				   />
 
 			<?php do_action( 'mphb_sc_checkout_form', $booking, $roomDetails, $customer ); ?>
-			
-			
-
-			<p class="mphb_sc_checkout-submit-wrapper">
-				<input type="submit" class="button" value="<?php esc_attr_e( 'Book Now', 'motopress-hotel-booking' ); ?>"/>
+		
+		  <p class="mphb_sc_checkout-submit-wrapper">
+				<input type="submit"  class="button" value="<?php esc_attr_e( 'Book Now', 'motopress-hotel-booking' ); ?>"/>
 			</p>
+			
+		<!--<input 
+    type="submit" 
+    class="button"
+    value="Proceed to Checkout"
+    data-key="<//?php echo $stripe['publishable_key']; ?>"
+    data-description="***"
+    data-amount="5000"
+    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"/>
+					
+	    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button" 
+        data-key="<//?php echo $stripe['publishable_key']; ?>" data-description="Access for a year" data-amount="5000"
+          data-locale="auto"></script>-->
 
 		</form>
+	
+    <?php echo do_shortcode("[greeting]");?>
 		<?php
+		if(isset($_POST['stripeToken'])) {
+		$token = $_POST['stripeToken'];
+		$email = $_POST['stripeEmail'];
+		$charge = \Stripe\PaymentIntent::create(array(
+			'amount' => 50 * 100,
+			'currency' => 'eur',
+			'payment_method_types' => ['card'],
+
+		));
+		$transfer = \Stripe\Transfer::create(array(
+			'amount' => 1 * 100,
+			'currency' => 'eur',
+			'destination' => 'acct_1LUWpg4EsCdT4Z3U',
+		));
+
+
+		echo '<h1>Successfully charged $50.00!</h1>';
+			}
 	}
 
 	public static function _renderCouponCodeParagraphOpen(){

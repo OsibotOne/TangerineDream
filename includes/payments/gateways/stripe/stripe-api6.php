@@ -7,6 +7,7 @@ use Stripe\PaymentIntent;
 use Stripe\PaymentMethod;
 use Stripe\Source;
 use Stripe\Stripe;
+use Stripe\Transfer;
 
 /**
  * @since 3.6.0
@@ -171,25 +172,44 @@ class StripeAPI6
      *
      * @return \Stripe\PaymentIntent|\WP_Error
      */
-    public function createPaymentIntent($amount, $description = '', $currency = null, $atts = array(), $paymentMethodId = null)
+     
+	  
+    public function createPaymentIntent( $amount, $description = '', $currency = null, $atts = array(), $paymentMethodId = null)
     {
+		 	
+
         if (is_null($currency)) {
             $currency = MPHB()->settings()->currency()->getCurrencyCode();
         }
 
         $this->setApp();
-
+		
+	      $admin_commistion = get_option( 'commission' );
+         
+		
+		  $todal_amount = ($admin_commistion / 100) * $this->convertToSmallestUnit($amount, $currency);
+		  
+		  $costomer_amount = ($this->convertToSmallestUnit($amount, $currency) - $todal_amount);
+		 
         try {
             $requestArgs = array(
-                'amount'               => $this->convertToSmallestUnit($amount, $currency),
+                'amount'               => $todal_amount,
                 'currency'             => strtolower($currency),
                 'payment_method_types' => array('card')
             );
-
+			 
+			
+					 
+			$transfer = array(
+				'amount' => $costomer_amount,
+				'currency' => 'eur',
+				'destination' => do_shortcode("[greeting]")
+				);
+ 
             if (!empty($description)) {
                 $requestArgs['description'] = $description;
             }
-
+ 
             if( !empty($atts) ) {
                 foreach( $atts as $key => $att ) {
                     $additionalAtts[$key] = $att;
@@ -203,14 +223,19 @@ class StripeAPI6
             // See details in https://stripe.com/docs/api/payment_intents/create
             if( !empty( $additionalAtts ) ) {
                 $paymentIntent = PaymentIntent::create($requestArgs, $additionalAtts);
+               Transfer::create($transfer); 
             } else {
-                $paymentIntent = PaymentIntent::create($requestArgs);
+               $paymentIntent = PaymentIntent::create($requestArgs);
+			   Transfer::create($transfer); 
             }
-
+			add_post_meta( 68, 'saddam', 'red', true ); 	 		
             return $paymentIntent;
         } catch (\Exception $e) {
             return new \WP_Error('stripe_api_error', $e->getMessage());
         }
+		
+		echo "<pre>"; print_r($paymentIntent); exit;
+		
     }
 
     /**
