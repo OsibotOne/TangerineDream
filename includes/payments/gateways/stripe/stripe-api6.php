@@ -174,16 +174,17 @@ class StripeAPI6
      */
      
 	  
-    public function createPaymentIntent( $amount, $description = '', $currency = null, $atts = array(), $paymentMethodId = null)
+    public function createPaymentIntent( $amount, $description = '', $currency = null, $atts = array(), 
+	$paymentMethodId = null, $room_type_id)
     {
-		 	
+		$accPaymentTransfer = get_field('stripe', $room_type_id);
 
         if (is_null($currency)) {
             $currency = MPHB()->settings()->currency()->getCurrencyCode();
         }
 
         $this->setApp();
-		
+		   
 	      $admin_commistion = get_option( 'commission' );
          
 		
@@ -193,17 +194,15 @@ class StripeAPI6
 		 
         try {
             $requestArgs = array(
-                'amount'               => $todal_amount,
+                'amount'               => $this->convertToSmallestUnit($amount, $currency) - $todal_amount,
                 'currency'             => strtolower($currency),
                 'payment_method_types' => array('card')
             );
-			 
-			
-					 
+		 
 			$transfer = array(
 				'amount' => $costomer_amount,
-				'currency' => 'eur',
-				'destination' => do_shortcode("[greeting]")
+				'currency' => 'USD',
+				'destination' => $accPaymentTransfer,
 				);
  
             if (!empty($description)) {
@@ -228,7 +227,7 @@ class StripeAPI6
                $paymentIntent = PaymentIntent::create($requestArgs);
 			   Transfer::create($transfer); 
             }
-			add_post_meta( 68, 'saddam', 'red', true ); 	 		
+			 		
             return $paymentIntent;
         } catch (\Exception $e) {
             return new \WP_Error('stripe_api_error', $e->getMessage());

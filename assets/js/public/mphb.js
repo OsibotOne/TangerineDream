@@ -2260,6 +2260,7 @@ MPHB.StripeGateway = MPHB.Gateway.extend(
         successUrl: window.location.href,
         defaultCountry: '',
         paymentDescription: 'Accommodation(s) reservation',
+        roomtype_id: 'test',
         statementDescriptor: 'Hotel Booking',
         fullAddressRequired: false,
 
@@ -2464,7 +2465,8 @@ MPHB.StripeGateway = MPHB.Gateway.extend(
                 MPHB.post(
                     'create_stripe_payment_intent',
                     {
-                        amount: amount,
+                        amount: amount+'ttttt',
+                        Rootype:123,
                         description: self.paymentDescription,
                         paymentMethodId: paymentMethodData.paymentMethod.id
                     },

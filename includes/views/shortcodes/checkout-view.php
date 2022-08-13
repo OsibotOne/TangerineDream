@@ -155,6 +155,7 @@ class CheckoutView {
 	 * @param array $roomDetails
 	 */
 	public static function renderBookingDetails( $booking, $roomDetails ){
+
 		?>
 		<section id="mphb-booking-details" class="mphb-booking-details mphb-checkout-section">
 			<h3 class="mphb-booking-details-title">
@@ -174,11 +175,17 @@ class CheckoutView {
      * @since 3.7.0 parameter $roomType became third.
 	 */
 	public static function renderRoomTypeTitle( $reservedRoom, $roomIndex, $roomType ){
+		
 		?>
 		<h3 class="mphb-room-number">
 			<?php echo esc_html( sprintf( __( 'Accommodation #%d', 'motopress-hotel-booking' ), $roomIndex + 1 ) ); ?>
 		</h3>
 		<p class="mphb-room-type-title">
+		<?php 
+         $accomodationType=  get_page_by_title($roomType->getTitle(), OBJECT, 'mphb_room_type');
+		 
+		 testFunction($accomodationType->ID);
+		?>
 			<span>
 				<?php esc_html_e( 'Accommodation Type:', 'motopress-hotel-booking' ); ?>
 			</span>
@@ -188,7 +195,6 @@ class CheckoutView {
 		</p>
 		<?php
 	}
-
     /**
      * @param \MPHB\Entities\ReservedRoom $reservedRoom
      * @param string $roomIndex
@@ -940,42 +946,13 @@ class CheckoutView {
 		  <p class="mphb_sc_checkout-submit-wrapper">
 				<input type="submit"  class="button" value="<?php esc_attr_e( 'Book Now', 'motopress-hotel-booking' ); ?>"/>
 			</p>
-			
-		<!--<input 
-    type="submit" 
-    class="button"
-    value="Proceed to Checkout"
-    data-key="<//?php echo $stripe['publishable_key']; ?>"
-    data-description="***"
-    data-amount="5000"
-    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"/>
-					
-	    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button" 
-        data-key="<//?php echo $stripe['publishable_key']; ?>" data-description="Access for a year" data-amount="5000"
-          data-locale="auto"></script>-->
+	
 
 		</form>
+	<?php  
+
 	
-    <?php echo do_shortcode("[greeting]");?>
-		<?php
-		if(isset($_POST['stripeToken'])) {
-		$token = $_POST['stripeToken'];
-		$email = $_POST['stripeEmail'];
-		$charge = \Stripe\PaymentIntent::create(array(
-			'amount' => 50 * 100,
-			'currency' => 'eur',
-			'payment_method_types' => ['card'],
 
-		));
-		$transfer = \Stripe\Transfer::create(array(
-			'amount' => 1 * 100,
-			'currency' => 'eur',
-			'destination' => 'acct_1LUWpg4EsCdT4Z3U',
-		));
-
-
-		echo '<h1>Successfully charged $50.00!</h1>';
-			}
 	}
 
 	public static function _renderCouponCodeParagraphOpen(){
