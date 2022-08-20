@@ -184,7 +184,7 @@ class CheckoutView {
 		<?php 
          $accomodationType=  get_page_by_title($roomType->getTitle(), OBJECT, 'mphb_room_type');
 		 
-		 testFunction($accomodationType->ID);
+		 
 		?>
 			<span>
 				<?php esc_html_e( 'Accommodation Type:', 'motopress-hotel-booking' ); ?>

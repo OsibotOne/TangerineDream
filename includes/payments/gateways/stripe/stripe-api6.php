@@ -175,8 +175,9 @@ class StripeAPI6
      
 	  
     public function createPaymentIntent( $amount, $description = '', $currency = null, $atts = array(), 
-	$paymentMethodId = null, $room_type_id)
+	$paymentMethodId = null, $room_type_id )
     {
+
 		$accPaymentTransfer = get_field('stripe', $room_type_id);
 
         if (is_null($currency)) {
@@ -194,14 +195,14 @@ class StripeAPI6
 		 
         try {
             $requestArgs = array(
-                'amount'               => $this->convertToSmallestUnit($amount, $currency) - $todal_amount,
+                'amount'               => $todal_amount,
                 'currency'             => strtolower($currency),
                 'payment_method_types' => array('card')
             );
-		 
+		
 			$transfer = array(
 				'amount' => $costomer_amount,
-				'currency' => 'USD',
+				'currency' => 'AUD',
 				'destination' => $accPaymentTransfer,
 				);
  
@@ -221,22 +222,25 @@ class StripeAPI6
 
             // See details in https://stripe.com/docs/api/payment_intents/create
             if( !empty( $additionalAtts ) ) {
-                $paymentIntent = PaymentIntent::create($requestArgs, $additionalAtts);
+                $paymentIntent = PaymentIntent::create($requestArgs, $additionalAtts);	
                Transfer::create($transfer); 
             } else {
                $paymentIntent = PaymentIntent::create($requestArgs);
 			   Transfer::create($transfer); 
             }
-			 		
+ 
+		
+			
             return $paymentIntent;
         } catch (\Exception $e) {
             return new \WP_Error('stripe_api_error', $e->getMessage());
         }
 		
-		echo "<pre>"; print_r($paymentIntent); exit;
+		
 		
     }
 
+     
     /**
      * @param \Stripe\PaymentIntent $paymentIntent
      * @param string $description
