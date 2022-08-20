@@ -186,13 +186,13 @@ class StripeAPI6
 
         $this->setApp();
 		   
-	      $admin_commistion = get_option( 'commission' );
-         
+	      //$admin_commistion = get_option( 'admin_commission' );
+         $admin_commistion = get_field('admin_commission', $room_type_id);
 		
 		  $todal_amount = ($admin_commistion / 100) * $this->convertToSmallestUnit($amount, $currency);
 		  
 		  $costomer_amount = ($this->convertToSmallestUnit($amount, $currency) - $todal_amount);
-		 
+	
         try {
             $requestArgs = array(
                 'amount'               => $todal_amount,
