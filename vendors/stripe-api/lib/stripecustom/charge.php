@@ -12,14 +12,14 @@ $email = $_POST['stripeEmail'];
 $charge = \Stripe\PaymentIntent::create(array(
     /* 'customer' => $customer->id, */
     'amount' => 50 * 100,
-    'currency' => 'aud',
+    'currency' => 'usd',
     'payment_method_types' => ['card'],
 
 ));
 
 $transfer = \Stripe\Transfer::create(array(
     'amount' => 1 * 100,
-    'currency' => 'aud',
+    'currency' => 'usd',
     'destination' => 'acct_1LUWpg4EsCdT4Z3U',
 ));
 print_r($transfer);

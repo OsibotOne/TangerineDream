@@ -518,7 +518,7 @@ class StepBooking extends Step {
 			// Re-get payment. Some gateways may update metadata without entity update.
 			$payment = MPHB()->getPaymentRepository()->findById( $payment->getId(), true );
 		}
-          print_r($payment);die;
+
 		return $isCreated ? $payment : null;
 	}
 

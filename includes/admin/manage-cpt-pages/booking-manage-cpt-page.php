@@ -49,7 +49,7 @@ class BookingManageCPTPage extends ManageCPTPage {
     }
 
 	public function filterColumns( $columns ){
-       
+
 		if ( isset( $columns['title'] ) ) {
 			unset( $columns['title'] );
 		}
@@ -61,11 +61,8 @@ class BookingManageCPTPage extends ManageCPTPage {
 			'guests'			 => __( 'Guests', 'motopress-hotel-booking' ),
 			'customer_info'		 => __( 'Customer Info', 'motopress-hotel-booking' ),
 			'price'				 => __( 'Price', 'motopress-hotel-booking' ),
-			//'discount_total'	 => __( 'admin Commition ', 'motopress-hotel-booking' ),
-			//'total'	             => __( 'Owner Price ', 'motopress-hotel-booking' ),
             'room_type'          => __('Accommodation', 'motopress-hotel-booking'),
 			'mphb_date'			 => __( 'Date', 'motopress-hotel-booking' )
-			
 		);
 
 		$offset	 = array_search( 'date', array_keys( $columns ) ); // Set custom columns position before "DATE" column
@@ -269,26 +266,6 @@ class BookingManageCPTPage extends ManageCPTPage {
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 echo !empty($links) ? implode(', ', $links) : self::EMPTY_VALUE_PLACEHOLDER;
                 break;
-				
-			 case 'discount_total':
-                // echo '$'. 10;
-				$meta = get_post_meta($postId, 'mphb_total_price', true);
-                print_r($meta);
-				// echo get_post_meta( 'discount_total', $postId ); 
-				
-                // Don't show the price for imported bookings
-              // $key_1_values = get_post_meta( 974, 'mphb_total_price' ); 
-			  // echo $key_1_values; 
-				
-                break;
-				
-				case 'total':
-				
-				$meta = get_post_meta($postId, 'mphb_total_price', true);
-                print_r($meta);
-			 break;
-				
-				
 			case 'mphb_date':
 				?>
 				<abbr title="<?php echo esc_attr( get_the_date( MPHB()->settings()->dateTime()->getDateTimeFormatWP(), $postId ) ); ?>">
@@ -581,7 +558,7 @@ class BookingManageCPTPage extends ManageCPTPage {
                 $alternatives[] = $wpdb->prepare("{$wpdb->posts}.ID = %d", $id);
                 $alternatives[] = $wpdb->prepare("(mphb_bookmeta.meta_key = 'mphb_total_price' AND mphb_bookmeta.meta_value = %s)", $price);
             }
-             
+
             // Search any other match
             $searchVariants = array($search);
 

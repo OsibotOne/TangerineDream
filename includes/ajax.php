@@ -669,6 +669,8 @@ class Ajax {
 	/**
 	 * @since 3.6.0
 	 */
+	    
+	
 	public function create_stripe_payment_intent()
 	{
 		$this->verifyNonce( __FUNCTION__ );
@@ -679,14 +681,14 @@ class Ajax {
 			wp_send_json_error( array(
 				'message' => __( 'Please complete all required fields and try again.', 'motopress-hotel-booking' )
 			) );
-		}
+		}  
 
 		$amount      = floatval($input['amount']);
 		$description = isset($input['description']) ? mphb_clean($input['description']) : '';
 		$paymentMethodId = isset($input['paymentMethodId']) ? $input['paymentMethodId'] : null;
-		$room_type_id = $input['room_type_id'];
 		
 
+		$room_type_id = $input['room_type_id']; 
 		$currency  = MPHB()->settings()->currency()->getCurrencyCode();
 		$stripeApi = MPHB()->gatewayManager()->getGateway('stripe')->getApi();
 
